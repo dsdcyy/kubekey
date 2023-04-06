@@ -5,67 +5,67 @@ metadata:
   name: sample
 spec:
   hosts:
-  # Assume that the default port for SSH is 22. Otherwise, add the port number after the IP address. 
-  # If you install Kubernetes on ARM, add "arch: arm64". For example, {...user: ubuntu, password: Qcloud@123, arch: arm64}.
+  # 假设SSH默认端口为22，否则在IP地址后面加上端口号。 
+  # 如果您在 ARM 上安装 Kubernetes，请添加“arch: arm64”。例如，{...用户：ubuntu，密码：Qcloud@123，arch：arm64}。
   - {name: node1, address: 172.16.0.2, internalAddress: 172.16.0.2, port: 8022, user: ubuntu, password: "Qcloud@123"}
-  # For default root user.
-  # Kubekey will parse `labels` field and automatically label the node.
+  # 对于默认的 root 用户。
+  # Kubekey 将解析 `labels` 字段并自动标记节点。
   - {name: node2, address: 172.16.0.3, internalAddress: 172.16.0.3, password: "Qcloud@123", labels: {disk: SSD, role: backend}}
-  # For password-less login with SSH keys.
+  # 对于使用 SSH 密钥的无密码登录。
   - {name: node3, address: 172.16.0.4, internalAddress: 172.16.0.4, privateKeyPath: "~/.ssh/id_rsa"}
   roleGroups:
     etcd:
-    - node1 # All the nodes in your cluster that serve as the etcd nodes.
+    - node1 # 集群中作为 etcd 节点的所有节点。
     master:
     - node1
-    - node[2:10] # From node2 to node10. All the nodes in your cluster that serve as the master nodes.
+    - node[2:10] # 从节点 2 到节点 10。集群中充当主节点的所有节点。
     worker:
     - node1
-    - node[10:100] # All the nodes in your cluster that serve as the worker nodes.
+    - node[10:100] # 集群中所有充当工作节点的节点。
   controlPlaneEndpoint:
-    #Internal loadbalancer for apiservers. Support: haproxy, kube-vip [Default: ""]
+    #apiservers 的内部负载均衡器。支持：haproxy、kube-vip [Default ""]
     internalLoadbalancer: haproxy 
     domain: lb.kubesphere.local
-    # The IP address of your load balancer. If you use internalLoadblancer in "kube-vip" mode, a VIP is required here.
+    # 负载均衡器的 IP 地址。如果您在“kube-vip”模式下使用 internalLoadblancer，则此处需要一个 VIP。
     address: ""      
     port: 6443
   system:
-    # The ntp servers of chrony.
+    # chrony 的 ntp 服务器。
     ntpServers:
       - time1.cloud.tencent.com
       - ntp.aliyun.com
-      - node1 # Set the node name in `hosts` as ntp server if no public ntp servers access.
+      - node1 # 如果没有公共 ntp 服务器访问，则将 `hosts` 中的节点名称设置为 ntp 服务器。
     timezone: "Asia/Shanghai"
-    # Specify additional packages to be installed. The ISO file which is contained in the artifact is required.
+    # 指定要安装的附加包。需要工件中包含的 ISO 文件。
     rpms:
       - nfs-utils
-    # Specify additional packages to be installed. The ISO file which is contained in the artifact is required.
+    #指定要安装的附加包。需要工件中包含的 ISO 文件。
     debs: 
       - nfs-common
-    #preInstall:  # Specify custom init shell scripts for each nodes, and execute according to the list order.
-    #  - name: format and mount disk  
-    #    bash: /bin/bash -x setup-disk.sh
-    #    materials: # scripts can has some dependency materials. those will copy to the node        
-    #      - ./setup-disk.sh # the script which shell execute need
-    #      -  xxx            # other tools materials need by this script
-    #postInstall: # Specify custom finish clean up shell scripts for each nodes after the kubernetes install.
-    #  - name: clean tmps files
-    #    bash: |
-    #       rm -fr /tmp/kubekey/*
-    #skipConfigureOS: true # Do not pre-configure the host OS (e.g. kernel modules, /etc/hosts, sysctl.conf, NTP servers, etc). You will have to set these things up via other methods before using KubeKey.
+    #preInstall: # 为每个节点指定自定义的init shell脚本，并按照列表顺序执行。
+    # -name: 格式化并挂载磁盘
+    # bash: /bin/bash -x setup-disk.sh
+    # materials: # 脚本可以有一些依赖材料。那些将复制到节点
+    # -./setup-disk.sh #shell执行需要的脚本
+    # -xxx # 本脚本需要的其他工具材料
+    # postInstall: # 在 kubernetes 安装后为每个节点指定自定义完成清理 shell 脚本。
+    # -名称：清理 tmps 文件
+    # 庆典： |
+    # rm -fr /tmp/kubekey/*
+    #skipConfigureOS: true # 不要预先配置主机操作系统（例如内核模块、/etc/hosts、sysctl.conf、NTP 服务器等）。在使用 KubeKey 之前，您必须通过其他方法设置这些东西。
 
   kubernetes:
     version: v1.21.5
-    # Optional extra Subject Alternative Names (SANs) to use for the API Server serving certificate. Can be both IP addresses and DNS names.
+    # 可选的额外主题备用名称 (SAN) 用于 API 服务器服务证书。可以是 IP 地址和 DNS 名称。
     apiserverCertExtraSans:  
       - 192.168.8.8
       - lb.kubespheredev.local
-    # Container Runtime, support: containerd, cri-o, isula. [Default: docker]
+    # 容器运行时，支持：containerd、cri-o、isula。 [Default: docker]
     containerManager: docker
     clusterName: cluster.local
-    # Whether to install a script which can automatically renew the Kubernetes control plane certificates. [Default: false]
+    # 是否安装可以自动更新 Kubernetes 控制平面证书的脚本。 [Default: false]
     autoRenewCerts: true
-    # masqueradeAll tells kube-proxy to SNAT everything if using the pure iptables proxy mode. [Default: false].
+    # 如果使用纯 iptables 代理模式，masqueradeAll 告诉 kube-proxy 对所有内容进行 SNAT。[Default: false].
     masqueradeAll: false
     # maxPods is the number of Pods that can run on this Kubelet. [Default: 110]
     maxPods: 110
