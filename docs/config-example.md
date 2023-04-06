@@ -67,21 +67,21 @@ spec:
     autoRenewCerts: true
     # 如果使用纯 iptables 代理模式，masqueradeAll 告诉 kube-proxy 对所有内容进行 SNAT。[Default: false].
     masqueradeAll: false
-    # maxPods is the number of Pods that can run on this Kubelet. [Default: 110]
+   # maxPods 是可以在这个 Kubelet 上运行的 Pod 的数量。 [Default: 110]
     maxPods: 110
-    # podPidsLimit is the maximum number of PIDs in any pod. [Default: 10000]
+    # podPidsLimit 是任何 pod 中 PID 的最大数量。 [Default: 10000]
     podPidsLimit: 10000
-    # The internal network node size allocation. This is the size allocated to each node on your network. [Default: 24]
+   # 内部网络节点大小分配。这是分配给网络上每个节点的大小。 [Default: 24]
     nodeCidrMaskSize: 24
-    # Specify which proxy mode to use. [Default: ipvs]
+   # 指定使用哪种代理模式。 [Default: ipvs]
     proxyMode: ipvs
-    # enable featureGates, [Default: {"ExpandCSIVolumes":true,"RotateKubeletServerCertificate": true,"CSIStorageCapacity":true, "TTLAfterFinished":true}]
+    # 启用功能门, [Default: {"ExpandCSIVolumes":true,"RotateKubeletServerCertificate": true,"CSIStorageCapacity":true, "TTLAfterFinished":true}]
     featureGates: 
       CSIStorageCapacity: true
       ExpandCSIVolumes: true
       RotateKubeletServerCertificate: true
       TTLAfterFinished: true
-    ## support kata and NFD
+    # 支持型和 NFD
     # kata:
     #   enabled: true
     # nodeFeatureDiscovery
@@ -89,16 +89,16 @@ spec:
     # additional kube-proxy configurations
     kubeProxyConfiguration:
       ipvs:
-        # CIDR's to exclude when cleaning up IPVS rules.
-        # necessary to put node cidr here when internalLoadbalancer=kube-vip and proxyMode=ipvs
-        # refer to: https://github.com/kubesphere/kubekey/issues/1702
+        # 清理 IPVS 规则时要排除的 CIDR。
+        # 当 internalLoadbalancer=kube-vip 和 proxyMode=ipvs 时，必须将节点 cidr 放在这里
+        # 参考：https://github.com/kubesphere/kubekey/issues/1702
         excludeCIDRs:
           - 172.16.0.2/24
   etcd:
-    # Specify the type of etcd used by the cluster. When the cluster type is k3s, setting this parameter to kubeadm is invalid. [kubekey | kubeadm | external] [Default: kubekey]
+    # 指定集群使用的etcd类型。当集群类型为k3s时，设置该参数为kubeadm无效。 [kubekey | kubeadm | external] [Default: kubekey]
     type: kubekey  
-    ## The following parameters need to be added only when the type is set to external.
-    ## caFile, certFile and keyFile need not be set, if TLS authentication is not enabled for the existing etcd.
+   ## 下面的参数只有当type设置为external时才需要加上。
+    ## caFile、certFile 和 keyFile 不需要设置，如果没有为现有的 etcd 启用 TLS 身份验证。
     # external:
     #   endpoints:
     #     - https://192.168.6.6:2379
@@ -106,13 +106,13 @@ spec:
     #   certFile: /pki/etcd/etcd.crt
     #   keyFile: /pki/etcd/etcd.key
     dataDir: "/var/lib/etcd"
-    # Time (in milliseconds) of a heartbeat interval.
+    # 心跳间隔的时间（以毫秒为单位）。
     heartbeatInterval: "250"
-    # Time (in milliseconds) for an election to timeout. 
+    # 选举超时的时间（以毫秒为单位）。
     electionTimeout: "5000"
-    # Number of committed transactions to trigger a snapshot to disk.
+    # 触发快照到磁盘的已提交事务数。
     snapshotCount: "10000"
-    # Auto compaction retention for mvcc key value store in hour. 0 means disable auto compaction.
+    # 以小时为单位的 mvcc 键值存储的自动压缩保留。 0 表示禁用自动压缩。
     autoCompactionRetention: "8"
     # Set level of detail for etcd exported metrics, specify 'extensive' to include histogram metrics.
     metrics: basic
